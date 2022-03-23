@@ -1,5 +1,9 @@
-TITLE: Please provide the title of your project, followed by the names of all team members. Teams must be two students, with extremely rare exceptions.
-SUMMARY: Summarize your project in no more than 2-3 sentences. Describe what you plan to do and what parallel systems you will be working with. Example one-liners include (you should add a bit more detail):
+###TITLE
+Parallel Influence Maximization in Social Networks
+Yuling Wu(yulingw), Zican Yang(zicany)
+
+###SUMMARY
+Summarize your project in no more than 2-3 sentences. Describe what you plan to do and what parallel systems you will be working with. Example one-liners include (you should add a bit more detail):
 We are going to implement an optimized Smoothed Particle Hydrodynamics fluid solver on the NVIDIA GPUs in the lab.
 We are going port the Go runtime to Blacklight.
 We are going to create optimized implementations of sparse-matrix multiplication on both GPU and multi-core CPU platforms, and perform a detailed analysis of both systems鈥� performance characteristics.
