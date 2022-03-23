@@ -1,4 +1,4 @@
-# CMU 15-618 Project  
+# CMU 15-618 Parallel Computer Architecture and Programming Project  
 
 # Parallel Influence Maximization in Social Networks  
 
@@ -68,13 +68,13 @@ We choose C/C++ to implement our solution. First, we have large datasets, and C/
 We choose OpenMP to parallize our algorithm. To solve the dependency problem in original sequential algorithm, shared-memory model will be good for us to start with. We can use some locks to solve contention problems.
 
 ## SCHEDULE  
-Week 1: Implement sequential greedy and heuristic algorithms and choose which one to further parallelize
-.
-Week 2: Use OpenMP to develop parallel version of the algorithm
-.
-Week 3: Finish developing algorithm and try to optimize its performance
-.
-Week 4: Test on machines, complete report and prepare for demo and presentation;
+Week 1: Implement sequential greedy and heuristic algorithms and choose which one to further parallelize.  
+
+Week 2: Use OpenMP to develop parallel version of the algorithm.  
+
+Week 3: Finish developing algorithm and try to optimize its performance.  
+
+Week 4: Test on machines, complete report and prepare for demo and presentation.  
 
 ## Reference  
 
