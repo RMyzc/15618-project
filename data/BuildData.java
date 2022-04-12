@@ -34,6 +34,8 @@ public class BuildData {
                 continue;
             } else if (record.containsKey(srcVec) && record.get(srcVec).contains(destVec)) {
                 continue;
+            } else if (record.containsKey(destVec) && record.get(destVec).contains(srcVec)) {
+                continue;
             }
 
             result.add(new Edge(srcVec, destVec));

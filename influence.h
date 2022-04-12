@@ -2,6 +2,12 @@
 
 using namespace std;
 
+enum heuristicMode {
+    BASIC,
+    MINUSONE,
+    DEGREEDISCOUNT,
+};
+
 typedef struct vertex {
     int id;
     vector<int> neighbors;

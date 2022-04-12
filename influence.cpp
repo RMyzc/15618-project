@@ -4,12 +4,18 @@
 #include <fstream>
 #include <string>
 #include <queue>
+#include <unordered_map>
+#include <unordered_set>
 #include <chrono>
 #include <time.h>
 #include <math.h>
 #include <limits.h>
 
 using namespace std;
+
+static bool cmp(const pair<int, int>& p1, const pair<int, int>& p2) {
+    return p1.second > p2.second;
+}
 
 void readInput(char *inputFilename, int *nVertices, int *nEdges, graph_t **g) {
     ifstream infile(inputFilename);
@@ -64,7 +70,7 @@ void singleNodeBFS(graph_t *g, int v_id, bool visited[], int nVertices) {
     
 }
 
-long monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
+int monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
     long result = 0;
     int nVertices = int(g->vertices.size());
     
@@ -121,6 +127,91 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
         printf("maxval = %d\n", maxval);
     } else {
         // Heuristic
+        int mode = BASIC;
+        if (mode == BASIC) {
+            vector<pair<int, int> > rank;
+            for (int i = 0; i < nVertices; i++) {
+                pair<int, int> p = make_pair(i, int(g->vertices[i]->neighbors.size()));
+                rank.push_back(p);
+            }
+            sort(rank.begin(), rank.end(), cmp);
+            // for (int i = 0; i < nVertices; i++) {
+            //     printf("%d %d\n", rank[i].first, rank[i].second);
+            // }
+            vector<int> seeds;
+            for (int i = 0; i < nSeeds; i++) {
+                seeds.push_back(rank[i].first);
+            }
+            int result = monteCarloSimulation(g, seeds, nMonteCarloSimulations);
+            printf("Basic heuristic result = %d\n", result);
+        } else if (mode == MINUSONE) {
+            unordered_map<int, int> id2degree;
+            for (int i = 0; i < nVertices; i++) {
+                id2degree[g->vertices[i]->id] = int(g->vertices[i]->neighbors.size());
+            }
+
+            vector<int> seeds;
+            for (int i = 0; i < nSeeds; i++) {
+                int maxId = -1;
+                int maxDegree = INT_MIN;
+                for (auto it = id2degree.begin(); it != id2degree.end(); it++) {
+                    if (it->second > maxDegree) {
+                        maxId = it->first;
+                        maxDegree = it->second;
+                    }
+                }
+                seeds.push_back(maxId);
+                id2degree.erase(maxId);
+                for (int j = 0; j < int(g->vertices[maxId]->neighbors.size()); j++) {
+                    id2degree[g->vertices[maxId]->neighbors[j]] -= 1;
+                }
+            }
+            int result = monteCarloSimulation(g, seeds, nMonteCarloSimulations);
+            printf("Minus-1 heuristic result = %d\n", result);
+        } else if (mode == DEGREEDISCOUNT) {
+            unordered_map<int, int> id2degree;
+            for (int i = 0; i < nVertices; i++) {
+                id2degree[g->vertices[i]->id] = int(g->vertices[i]->neighbors.size());
+            }
+
+            unordered_set<int> seedsSet;            
+            for (int i = 0; i < nSeeds; i++) {
+                int maxId = -1;
+                int maxDegree = INT_MIN;
+                for (auto it = id2degree.begin(); it != id2degree.end(); it++) {
+                    if (it->second > maxDegree) {
+                        maxId = it->first;
+                        maxDegree = it->second;
+                    }
+                }
+                seedsSet.insert(maxId);
+                id2degree.erase(maxId);
+                
+                // ddv = dv - [2tv + (dv - tv)tvp]
+                for (int j = 0; j < int(g->vertices[maxId]->neighbors.size()); j++) {
+                    int neighborId = g->vertices[maxId]->neighbors[j];
+                    int originalDegree =  int(g->vertices[neighborId]->neighbors.size());
+                    
+                    int neighborSeedsCnt = 0;
+                    for (int k = 0; k < int(g->vertices[neighborId]->neighbors.size()); k++) {
+                        if (seedsSet.find(g->vertices[neighborId]->neighbors[k]) != seedsSet.end()) {
+                            neighborSeedsCnt++;
+                        }
+                    }
+                    id2degree[g->vertices[maxId]->neighbors[j]] = 
+                        originalDegree - (2 * neighborSeedsCnt + 
+                        (originalDegree - neighborSeedsCnt) * neighborSeedsCnt * g->prob);
+                }
+            }
+
+            vector<int> seeds;
+            seeds.insert(seeds.end(), seedsSet.begin(), seedsSet.end());
+
+            int result = monteCarloSimulation(g, seeds, nMonteCarloSimulations);
+            printf("Degree Discount heuristic result = %d\n", result);
+
+        }
+
     }
 
 }
