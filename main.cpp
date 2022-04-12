@@ -1,20 +1,25 @@
 #include "influence.h"
 #include <cstdio>
 #include <cstdlib>
+#include <chrono>
 #include <unistd.h>
+#include <utility>
+
+typedef std::chrono::high_resolution_clock Clock;
+typedef std::chrono::duration<double> dsec;
 
 int main(int argc, char *argv[]) {
-    double startTime;
-    double endTime;
+    double totalRuntime;
     int nSeeds = 10;
     int nMonteCarloSimulations = 100;
     double prob = 0.1;
     char *inputFilename = NULL;
     int opt = 0;
+    bool greedy = true;
 
     // Read command line arguments
     do {
-        opt = getopt(argc, argv, "f:p:i:s:");
+        opt = getopt(argc, argv, "f:p:i:s:t:");
         switch (opt) {
         case 'f':
             inputFilename = optarg;
@@ -32,6 +37,10 @@ int main(int argc, char *argv[]) {
             nSeeds = atoi(optarg);
             break;
 
+        case 't':
+            greedy = atoi(optarg) > 0;
+            break;
+
         case -1:
             break;
 
@@ -45,8 +54,12 @@ int main(int argc, char *argv[]) {
         return -1;
     }
 
+    auto startTime = Clock::now();
     // Run computation
-    compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, &startTime, &endTime);
+    compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy);
+
+    totalRuntime = chrono::duration_cast<dsec>(Clock::now() - startTime).count();
+    printf("Total Compute Time: %lf.\n", totalRuntime);
 
     // Cleanup
     // printf("Elapsed time for proc %d: %f\n", procID, endTime - startTime);

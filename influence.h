@@ -27,4 +27,4 @@ typedef struct graph {
     }
 } graph_t;
 
-void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, double *startTime, double *endTime);
+void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy);

@@ -1,9 +1,13 @@
 #include "influence.h"
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <queue>
+#include <chrono>
 #include <time.h>
+#include <math.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -23,8 +27,8 @@ void readInput(char *inputFilename, int *nVertices, int *nEdges, graph_t **g) {
     }
 }
 
-void singleNodeBFS(graph_t *g, vertex_t *v, bool visited[], int nVertices) {
-    // Mark the current node as visited and enqueue it
+void singleNodeBFS(graph_t *g, int v_id, bool visited[], int nVertices) {
+    vertex_t *v = g->vertices[v_id];
     if (visited[v->id]) {
         return;
     }
@@ -60,7 +64,7 @@ void singleNodeBFS(graph_t *g, vertex_t *v, bool visited[], int nVertices) {
     
 }
 
-long monteCarloSimulation(graph_t *g, vector<vertex_t *> vertices, int numIterations) {
+long monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
     long result = 0;
     int nVertices = int(g->vertices.size());
     
@@ -79,14 +83,14 @@ long monteCarloSimulation(graph_t *g, vector<vertex_t *> vertices, int numIterat
                 visitedCount++;
             }
         }
-        printf("round %d, visitedCount %d\n", round, visitedCount);
+        // printf("round %d, visitedCount %d\n", round, visitedCount);
         result += visitedCount;
     }
     
     return result / numIterations;
 }
 
-void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, double *startTime, double *endTime) {
+void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy) {
     /* initialize random seed: */
     srand(time(NULL));
     
@@ -94,11 +98,29 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
     int nVertices = 0, nEdges = 0;
     graph_t *g = new graph_t(prob);
     readInput(inputFilename, &nVertices, &nEdges, &g);
-    
-    vector<vertex_t *> selectedVertices;
-    selectedVertices.push_back(g->vertices[0]);
-    
-    int res = monteCarloSimulation(g, selectedVertices, nMonteCarloSimulations);
-    printf("result = %d\n", res);
+
+    if (greedy) {
+        int maxval = INT_MIN;
+        vector<int> seeds, selectedVertices;
+        vector<bool> vec(nVertices, false);
+        fill(vec.begin(), vec.begin() + nSeeds, true);
+
+        do {
+            selectedVertices.clear();
+            for (int i = 0; i < nVertices; ++i) {
+                if (vec[i]) {
+                    selectedVertices.push_back(i);
+                }
+            }
+            int cur = monteCarloSimulation(g, selectedVertices, nMonteCarloSimulations);
+            if (cur > maxval) {
+                maxval = cur;
+                seeds.assign(selectedVertices.begin(), selectedVertices.end());
+            }
+        } while (prev_permutation(vec.begin(), vec.end()));
+        printf("maxval = %d\n", maxval);
+    } else {
+        // Heuristic
+    }
 
 }
