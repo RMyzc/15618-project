@@ -1,3 +1,4 @@
+#include "influence.h"
 #include <cstdio>
 #include <cstdlib>
 #include <unistd.h>
@@ -45,7 +46,7 @@ int main(int argc, char *argv[]) {
     }
 
     // Run computation
-    // compute(procID, nproc, inputFilename, prob, numIterations, &startTime, &endTime);
+    compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, &startTime, &endTime);
 
     // Cleanup
     // printf("Elapsed time for proc %d: %f\n", procID, endTime - startTime);

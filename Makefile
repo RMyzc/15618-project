@@ -1,6 +1,7 @@
 APP_NAME=influence
 
-OBJS=main.o
+OBJS += influence.o
+OBJS += main.o
 
 CXX = g++ -m64 -std=c++11
 # CXXFLAGS = -I. -O0 -g -Wall -fopenmp -Wno-unknown-pragmas
