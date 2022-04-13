@@ -1,8 +1,10 @@
 import java.util.*;
 
 public class BuildData {
-    static int vecNum = 64;
-    static int edgeNum = 128;
+    static int vecNum = 20;
+    static int edgeNum = 200;
+
+    static int base = 0;
 
     private static class Edge {
         int srcVec;
@@ -51,7 +53,7 @@ public class BuildData {
 
         while(!result.isEmpty()) {
             Edge e = result.poll();
-            System.out.println(e.srcVec + " " + e.destVec);
+            System.out.println((e.srcVec+base) + " " + (e.destVec+base));
         }
     }
 }
