@@ -127,7 +127,7 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
         printf("maxval = %d\n", maxval);
     } else {
         // Heuristic
-        int mode = BASIC;
+        int mode = DEGREEDISCOUNT;
         if (mode == BASIC) {
             vector<pair<int, int> > rank;
             for (int i = 0; i < nVertices; i++) {
@@ -189,6 +189,8 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
                 
                 // ddv = dv - [2tv + (dv - tv)tvp]
                 for (int j = 0; j < int(g->vertices[maxId]->neighbors.size()); j++) {
+                    if (id2degree.find(g->vertices[maxId]->neighbors[j]) == id2degree.end()) continue;
+                    
                     int neighborId = g->vertices[maxId]->neighbors[j];
                     int originalDegree =  int(g->vertices[neighborId]->neighbors.size());
                     
@@ -206,7 +208,6 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
 
             vector<int> seeds;
             seeds.insert(seeds.end(), seedsSet.begin(), seedsSet.end());
-
             int result = monteCarloSimulation(g, seeds, nMonteCarloSimulations);
             printf("Degree Discount heuristic result = %d\n", result);
 

@@ -48,16 +48,22 @@ We will reference some research papers in the *Reference* part to implement the 
 We will use the ghc machines to develop and PSC machines to test the performance. The PSC machines have more cores and can let us test the performance with higher parallization.
 
 ## GOALS AND DELIVERABLES  
-#### PLAN TO ACHIEVE  
-1. We lan to use OpenMP to parallelize the sequential influence spread algorithm, and expect a speedup of close to P-1 when *P* is not so high.  
-2. We plan to test our parallel algorithm on different datasets to ensure the performance speedup can scale.  
-3. We plan to see a drop in speedup when *P* is very high due to extra work.  
+#### PLAN TO ACHIEVE (100%)
+1. Use OpenMP to parallelize the sequential influence spread algorithm, and expect a speedup of close to P-1 when *P* is not so high.  
+2. Test the parallel algorithm on different datasets to ensure the performance speedup can scale.  
+3. Verify a drop in speedup when *P* is very high due to extra work.
+4. Verify that the spread of influence will not drop too much.
+5. Test and analyse the performance on both the serialize algorithm and the parallel algorithm from different input args (number of seeds, spread probability, etc.).  
+6. Build a user-defined tool to generate arbitrary kind of dataset which can be used to test the two kind of algorithms.
 
-#### HOPE TO ACHIEVE  
-We hope that our speedup will be close to P when *P* is not so high.
+#### HOPE TO ACHIEVE  (125%)  
+1. Our speedup will be close to P when *P* is not so high.
+2. The spread of influence will be very close to the serial algorithm.
+3. Produce a multi-dimensional scaling report that analyze the features from serial and parallel algorithm on different influence maximization algorithms(greedy, basic heuristic, minus one heuristic, degree discount heuristic).
 
-#### IN CASE THE WORK GOES MORE SLOWLY  
-If the algorithm will not work so well, we hope in the best situation it will give us a 2x speedup.
+#### IN CASE THE WORK GOES MORE SLOWLY (75%)
+1. If the algorithm will not work so well, we hope in the best situation it will give us a 2x speedup.  
+2. ~~Finish serialization and parallel versions in only one of the algorithms (Greedy or Heuristic).~~ (Already finished before milestone)
 
 #### DEMO PLAN
 We plan to give visualization of our influence spread result, graph of speedup and result analysis in our final poster session)
@@ -89,3 +95,62 @@ a social network. In: Proc SIGKDD, Washington, pp 137–146
 
 [4] Chen W , Wang Y , Yang S . Efficient influence maximization in social networks[C]. Proceedings of the 15th ACM SIGKDD International Conference on Knowledge
 Discovery and Data Mining, Paris, France, June 28 - July 1, 2009. ACM, 2009.
+
+## Milestone
+In one to two paragraphs, summarize the work that you have completed so far. (This should be easy if you have been maintaining this information on your project page.)
+
+- We have implemented both the serial version of greedy algorithm and heuristic algorithm, and we have implemented basic heuristic, minus one heuristic, and degree discount heuristic. We have imported real-world social network datasets, and implemented a databuilder for manually building some data for test.
+- We have tested the serial algorithm on datasets, and found out that the heuristic algorithm runs much faster than greedy algorithm, but has a worth spread result. We also found out that increasing spread probability will give a increasing spread result, but will give a first increasing then decreasing compute time of the program. To make testing and analyzing our future parallel implementation easier, we should choose a proper spread probability. Also, we should test greedy algorithm only on small datasets because it will take very long time to compute on large datasets. 
+
+Describe how you are doing with respect to the goals and deliverables stated in your proposal. Do you still believe you will be able to produce all your deliverables? If not, why? In your milestone writeup we want an updated list of goals that you plan to hit for the poster session.
+
+- We have build the full test code on the serialization version on both Greedy and Heuristic approaches.
+- Designed and implemented a dataset generator to build any kind of networks.
+- Tested on typical networks and collected performance results.
+
+Yes, we still believe we can produce all the deliverables. At the meantime, we have updated the goals and plans above.
+
+What do you plan to show at the poster session? Will it be a demo? Will it be a graph?
+
+- Basic introduction of the prject background and question we want to solve.  
+- Several typical Social Network Graphs as well as one of our test data.  
+- A Demo about how to run our experiments.
+- The results and comparison plots based on our experiments.  
+- The challenges we have met in this project and the solutions/efforts we performed.  
+
+Do you have preliminary results at this time? If so, it would be great to included them in your milestone write-up.
+
+- First, we tested on serial greedy algorithm on our manually built easy.txt dataset which contains 40 vertices and 600 edges, with number of seeds = 5 and different spread probability to see the spread result and compute time. We can see that as the spread probability increases, the spread result increses, but the compute time first increases, then decreases.  
+
+|               | p = 0.01 | p = 0.05 | p = 0.1 | p = 0.2 | p= 0.5 | p = 1  |
+|---------------|----------|----------|---------|---------|--------|--------|
+| Spread Result | 7        | 29       | 40      | 40      | 40     | 40     |
+| Compute Time  | 118.93   | 396.60   | 593.92  | 711.19  | 959.37 | 551.30 |  
+
+- Second, we tested on three kinds of heuristic algorithms on facebook datasets which contains 4039 vertices and 88234 edges with default settings and different spread probability.
+Basic Heuristic:  
+
+|               | p = 0.01 | p = 0.05 | p = 0.1 | p = 0.2 | p= 0.5 | p = 1 |
+|---------------|----------|----------|---------|---------|--------|-------|
+| Spread Result | 312      | 2156     | 2963    | 3512    | 3935   | 4039  |
+| Compute Time  | 0.035    | 0.110    | 0.133   | 0.160   | 0.216  | 0.129 |  
+
+MinusOne Heuristic:  
+
+|               | p = 0.01 | p = 0.05 | p = 0.1 | p = 0.2 | p= 0.5 | p = 1 |
+|---------------|----------|----------|---------|---------|--------|-------|
+| Spread Result | 302      | 2169     | 2955    | 3512    | 3935   | 4039  |
+| Compute Time  | 0.034    | 0.107    | 0.130   | 0.158   | 0.212  | 0.118 |
+
+DegreeDiscount Heuristic:  
+
+|               | p = 0.01 | p = 0.05 | p = 0.1 | p = 0.2 | p= 0.5 | p = 1 |
+|---------------|----------|----------|---------|---------|--------|-------|
+| Spread Result | 311      | 2165     | 2955    | 3578    | 3939   | 4039  |
+| Compute Time  | 0.039    | 0.113    | 0.135   | 0.162   | 0.216  | 0.124 |  
+
+List the issues that concern you the most. Are there any remaining unknowns (things you simply don't know how to solve, or resource you don't know how to get) or is it just a matter of coding and doing the work? If you do not wish to put this information on a public web site you are welcome to email the staff directly.  
+
+1. The serialization version of Greedy algorithm runs too slow to get the result in a short time, especially when the dataset is large.
+2. No enough official Social Network dataset for wide-range validation on our algorithms.
+3. Parallel design still have yet to be determined because we can parallelize the algorithm among monteCarloSimulation level, singleNodeBFS level, and verticesSelection level. More incoming demos may be helpful to make the final decision on the parallel design.
