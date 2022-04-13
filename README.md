@@ -97,12 +97,12 @@ a social network. In: Proc SIGKDD, Washington, pp 137–146
 Discovery and Data Mining, Paris, France, June 28 - July 1, 2009. ACM, 2009.
 
 ## Milestone
-In one to two paragraphs, summarize the work that you have completed so far. (This should be easy if you have been maintaining this information on your project page.)
+**In one to two paragraphs, summarize the work that you have completed so far. (This should be easy if you have been maintaining this information on your project page.)**
 
 - We have implemented both the serial version of greedy algorithm and heuristic algorithm, and we have implemented basic heuristic, minus one heuristic, and degree discount heuristic. We have imported real-world social network datasets, and implemented a databuilder for manually building some data for test.
 - We have tested the serial algorithm on datasets, and found out that the heuristic algorithm runs much faster than greedy algorithm, but has a worth spread result. We also found out that increasing spread probability will give a increasing spread result, but will give a first increasing then decreasing compute time of the program. To make testing and analyzing our future parallel implementation easier, we should choose a proper spread probability. Also, we should test greedy algorithm only on small datasets because it will take very long time to compute on large datasets. 
 
-Describe how you are doing with respect to the goals and deliverables stated in your proposal. Do you still believe you will be able to produce all your deliverables? If not, why? In your milestone writeup we want an updated list of goals that you plan to hit for the poster session.
+**Describe how you are doing with respect to the goals and deliverables stated in your proposal. Do you still believe you will be able to produce all your deliverables? If not, why? In your milestone writeup we want an updated list of goals that you plan to hit for the poster session.**
 
 - We have build the full test code on the serialization version on both Greedy and Heuristic approaches.
 - Designed and implemented a dataset generator to build any kind of networks.
@@ -110,7 +110,7 @@ Describe how you are doing with respect to the goals and deliverables stated in 
 
 Yes, we still believe we can produce all the deliverables. At the meantime, we have updated the goals and plans above.
 
-What do you plan to show at the poster session? Will it be a demo? Will it be a graph?
+**What do you plan to show at the poster session? Will it be a demo? Will it be a graph?**
 
 - Basic introduction of the prject background and question we want to solve.  
 - Several typical Social Network Graphs as well as one of our test data.  
@@ -118,7 +118,7 @@ What do you plan to show at the poster session? Will it be a demo? Will it be a 
 - The results and comparison plots based on our experiments.  
 - The challenges we have met in this project and the solutions/efforts we performed.  
 
-Do you have preliminary results at this time? If so, it would be great to included them in your milestone write-up.
+**Do you have preliminary results at this time? If so, it would be great to included them in your milestone write-up.**
 
 - First, we tested on serial greedy algorithm on our manually built easy.txt dataset which contains 40 vertices and 600 edges, with number of seeds = 5 and different spread probability to see the spread result and compute time. We can see that as the spread probability increases, the spread result increses, but the compute time first increases, then decreases.  
 
@@ -149,7 +149,7 @@ DegreeDiscount Heuristic:
 | Spread Result | 311      | 2165     | 2955    | 3578    | 3939   | 4039  |
 | Compute Time  | 0.039    | 0.113    | 0.135   | 0.162   | 0.216  | 0.124 |  
 
-List the issues that concern you the most. Are there any remaining unknowns (things you simply don't know how to solve, or resource you don't know how to get) or is it just a matter of coding and doing the work? If you do not wish to put this information on a public web site you are welcome to email the staff directly.  
+**List the issues that concern you the most. Are there any remaining unknowns (things you simply don't know how to solve, or resource you don't know how to get) or is it just a matter of coding and doing the work? If you do not wish to put this information on a public web site you are welcome to email the staff directly.**  
 
 1. The serialization version of Greedy algorithm runs too slow to get the result in a short time, especially when the dataset is large.
 2. No enough official Social Network dataset for wide-range validation on our algorithms.
