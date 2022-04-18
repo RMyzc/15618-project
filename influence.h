@@ -1,4 +1,6 @@
 #include <vector>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -34,3 +36,4 @@ typedef struct graph {
 } graph_t;
 
 void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy);
+void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy, int nThreads);

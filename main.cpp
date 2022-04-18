@@ -16,10 +16,12 @@ int main(int argc, char *argv[]) {
     char *inputFilename = NULL;
     int opt = 0;
     bool greedy = true;
+    int mode = 0;
+    int nthreads = 1;
 
     // Read command line arguments
     do {
-        opt = getopt(argc, argv, "f:p:i:s:t:");
+        opt = getopt(argc, argv, "f:p:i:s:t:m:n:");
         switch (opt) {
         case 'f':
             inputFilename = optarg;
@@ -41,6 +43,14 @@ int main(int argc, char *argv[]) {
             greedy = atoi(optarg) > 0;
             break;
 
+        case 'm':
+            mode = atoi(optarg);
+            break;
+
+        case 'n':
+            nthreads = atoi(optarg);
+            break;
+
         case -1:
             break;
 
@@ -56,7 +66,12 @@ int main(int argc, char *argv[]) {
 
     auto startTime = Clock::now();
     // Run computation
-    compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy);
+    if (mode == 0) {
+        compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy);
+    } else if (mode == 1) {
+        computeParallel(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy, nthreads);
+    }
+    
 
     totalRuntime = chrono::duration_cast<dsec>(Clock::now() - startTime).count();
     printf("Total Compute Time: %lf.\n", totalRuntime);
