@@ -96,7 +96,7 @@ a social network. In: Proc SIGKDD, Washington, pp 137–146
 [4] Chen W , Wang Y , Yang S . Efficient influence maximization in social networks[C]. Proceedings of the 15th ACM SIGKDD International Conference on Knowledge
 Discovery and Data Mining, Paris, France, June 28 - July 1, 2009. ACM, 2009.
 
-## Milestone
+## Milestone  
 **In one to two paragraphs, summarize the work that you have completed so far. (This should be easy if you have been maintaining this information on your project page.)**
 
 - We have implemented both the serial version of greedy algorithm and heuristic algorithm, and we have implemented basic heuristic, minus one heuristic, and degree discount heuristic. We have imported real-world social network datasets, and implemented a databuilder for manually building some data for test.
@@ -154,3 +154,23 @@ DegreeDiscount Heuristic:
 1. The serialization version of Greedy algorithm runs too slow to get the result in a short time, especially when the dataset is large.
 2. No enough official Social Network dataset for wide-range validation on our algorithms.
 3. Parallel design still have yet to be determined because we can parallelize the algorithm among monteCarloSimulation level, singleNodeBFS level, and verticesSelection level. More incoming demos may be helpful to make the final decision on the parallel design.
+
+## Final Report  
+
+#### Parallel on Round  
+
+**Degree-Discount Heuristic with monteCarloSimulation parallel on facebook dataset:  (number of monteCarloSimulation = 1000, other with default settings)**  
+
+|               | Serial | nThreads = 1 | nThreads = 2 | nThreads = 4 | nThreads = 8 | nThreads = 16 | nThreads = 32 | nThreads = 128 |
+|---------------|--------|--------------|--------------|--------------|--------------|---------------|---------------|----------------|
+| Spread Result | 2917   | 3029         | 2970         | 2930         | 2921         | 3048          | 2891          | 2927           |
+| Compute Time  | 1.2785 | 1.2810       | 0.6437       | 0.3282       | 0.2772       | 0.2562        | 0.3246        | 0.6581         |
+| Speedup       | 1x     | 0.998x       | 1.986x       | 3.895x       | 4.612x       | 4.990x        | 3.938x        | 1.942x         |
+
+**Greedy with monteCarloSimulation parallel on easy dataset: (number of seeds = 5, spread probability = 0.01, number of monteCarloSimulations = 10, change number of threads)**  
+
+|               | Serial | nThreads = 1 | nThreads = 2 | nThreads = 4 | nThreads = 8 | nThreads = 16 | nThreads = 32 | nThreads = 128 |
+|---------------|--------|--------------|--------------|--------------|--------------|---------------|---------------|----------------|
+| Spread Result | 14     | 15           | 15           | 15           | 15           | 15            | 15            | 15             |
+| Compute Time  | 7.8401 | 8.3752       | 6.4468       | 4.7810       | 3.6950       | 22.2256       | 59.5393       | 308.2245       |
+| Speedup       | 1x     | 0.936x       | 1.216x       | 1.639x       | 2.002x       | 0.357x        | 0.131x        | 0.025x         |
