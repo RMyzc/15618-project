@@ -11,6 +11,7 @@
 #include <math.h>
 #include <limits.h>
 #include <omp.h>
+#include <string.h>
 
 using namespace std;
 
@@ -306,20 +307,51 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
         vector<bool> vec(nVertices, false);
         fill(vec.begin(), vec.begin() + nSeeds, true);
 
+        int numPermutations = 0;
         do {
-            selectedVertices.clear();
+            numPermutations++;
+        } while (prev_permutation(vec.begin(), vec.end()));
+
+        // int allPermutations[numPermutations][nSeeds];
+        int** allPermutations = new int*[numPermutations];
+        for (int pt = 0; pt < numPermutations; pt++) {
+            allPermutations[pt] = new int[nSeeds];
+        }
+        // memset(&allPermutations, 0, sizeof(int) * numPermutations * nSeeds);
+        
+        int permutationsCnt = 0;
+
+        do {
+            // vector<int> cur(nSeeds, 0);
+            // allPermutations[permutationsCnt++] = cur;
+            int cnt = 0;
             for (int i = 0; i < nVertices; ++i) {
                 if (vec[i]) {
-                    selectedVertices.push_back(i);
+                    allPermutations[permutationsCnt][cnt++] = i;
                 }
             }
-            int cur = monteCarloSimulationParallel(g, selectedVertices, nMonteCarloSimulations, nThreads);
-            if (cur > maxval) {
-                maxval = cur;
-                seeds.assign(selectedVertices.begin(), selectedVertices.end());
-            }
+            permutationsCnt++;
         } while (prev_permutation(vec.begin(), vec.end()));
+
+        #pragma omp parallel for
+        for (int i = 0; i < numPermutations; i++) {
+            vector<int> perm(allPermutations[i], allPermutations[i] + nSeeds);
+            
+            int cur = monteCarloSimulation(g, perm, nMonteCarloSimulations);
+            #pragma omp critical
+            {
+                if (cur > maxval) {
+                    maxval = cur;
+                    seeds.assign(perm.begin(), perm.end());
+                }
+            }
+        }
         printf("maxval = %d\n", maxval);
+
+        for(int pt = 0; pt < numPermutations; pt++) {
+            delete []allPermutations[pt];
+        }
+        delete []allPermutations;
     } else {
         // Heuristic
         int mode = DEGREEDISCOUNT;
