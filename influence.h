@@ -4,6 +4,8 @@
 
 using namespace std;
 
+const int GREEDY_DIVIDE = 64;
+
 enum heuristicMode {
     BASIC,
     MINUSONE,

@@ -100,6 +100,33 @@ int monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
     return result / numIterations;
 }
 
+
+int monteCarloSimulationPt(graph_t *g, int* vertices, int verticesSize, int numIterations) {
+    long result = 0;
+    int nVertices = int(g->vertices.size());
+    
+    for (int round = 0; round < numIterations; round++) {
+        bool visited[nVertices];
+        for (int i = 0; i < nVertices; i++) visited[i] = false;
+
+        for (int v_index = 0; v_index < verticesSize; v_index++) {
+            // Search reachable neighbors
+            singleNodeBFS(g, vertices[v_index], visited, nVertices);
+        }
+
+        int visitedCount = 0;
+        for (int v_index = 0; v_index < nVertices; v_index++) {
+            if (visited[v_index]) {
+                visitedCount++;
+            }
+        }
+        // printf("round %d, visitedCount %d\n", round, visitedCount);
+        result += visitedCount;
+    }
+    
+    return result / numIterations;
+}
+
 void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy) {
     /* initialize random seed: */
     srand(time(NULL));
@@ -312,43 +339,62 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
             numPermutations++;
         } while (prev_permutation(vec.begin(), vec.end()));
 
+        // To reduce the malloc memory of allPermutation
+        int assign[GREEDY_DIVIDE];
+        memset(&assign, 0, sizeof(int) * GREEDY_DIVIDE);
+        int i = 0;
+        for (; i < numPermutations; i++) {
+            assign[i % GREEDY_DIVIDE]++;
+        }
+        i--;
+        int lineSize = assign[i % GREEDY_DIVIDE];
+        
         // int allPermutations[numPermutations][nSeeds];
-        int** allPermutations = new int*[numPermutations];
-        for (int pt = 0; pt < numPermutations; pt++) {
+        int** allPermutations = new int*[lineSize];
+        for (int pt = 0; pt < lineSize; pt++) {
             allPermutations[pt] = new int[nSeeds];
         }
         // memset(&allPermutations, 0, sizeof(int) * numPermutations * nSeeds);
         
-        int permutationsCnt = 0;
+        for (int round = 0; round < GREEDY_DIVIDE; round++) {
+            int permutationsCnt = 0;
+            int curSize = 0;
 
-        do {
-            // vector<int> cur(nSeeds, 0);
-            // allPermutations[permutationsCnt++] = cur;
-            int cnt = 0;
-            for (int i = 0; i < nVertices; ++i) {
-                if (vec[i]) {
-                    allPermutations[permutationsCnt][cnt++] = i;
+            do {
+                if (curSize == assign[round]) break;
+                int cnt = 0;
+                for (int i = 0; i < nVertices; ++i) {
+                    if (vec[i]) {
+                        allPermutations[permutationsCnt][cnt++] = i;
+                    }
                 }
-            }
-            permutationsCnt++;
-        } while (prev_permutation(vec.begin(), vec.end()));
+                permutationsCnt++;
+                curSize++;
+            } while (prev_permutation(vec.begin(), vec.end()));
 
-        #pragma omp parallel for
-        for (int i = 0; i < numPermutations; i++) {
-            vector<int> perm(allPermutations[i], allPermutations[i] + nSeeds);
-            
-            int cur = monteCarloSimulation(g, perm, nMonteCarloSimulations);
-            #pragma omp critical
+            int i, nThreads;
+            #pragma omp parallel default(shared) private(i, nThreads) 
             {
-                if (cur > maxval) {
-                    maxval = cur;
-                    seeds.assign(perm.begin(), perm.end());
+                i = omp_get_thread_num();
+                nThreads = omp_get_num_threads();
+                for (i = 0; i < curSize; i += nThreads) {
+                    // vector<int> perm(allPermutations[i], allPermutations[i] + nSeeds);
+                    // int cur = monteCarloSimulation(g, perm, nMonteCarloSimulations);
+                    
+                    int cur = monteCarloSimulationPt(g, allPermutations[i], nSeeds, nMonteCarloSimulations);
+                    #pragma omp critical
+                    {
+                        if (cur > maxval) {
+                            maxval = cur;
+                            seeds.assign(allPermutations[i], allPermutations[i] + nSeeds);
+                        }
+                    }
                 }
             }
         }
         printf("maxval = %d\n", maxval);
 
-        for(int pt = 0; pt < numPermutations; pt++) {
+        for(int pt = 0; pt < lineSize; pt++) {
             delete []allPermutations[pt];
         }
         delete []allPermutations;
