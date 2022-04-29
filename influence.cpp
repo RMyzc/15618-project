@@ -73,7 +73,6 @@ int monteCarloSimulation(Graph *g, vector<int> vertices, int numIterations) {
                 visitedCount++;
             }
         }
-        // printf("round %d, visitedCount %d\n", round, visitedCount);
         result += visitedCount;
     }
     
@@ -100,14 +99,13 @@ int monteCarloSimulationPt(Graph *g, int* vertices, int verticesSize, int numIte
                 visitedCount++;
             }
         }
-        // printf("round %d, visitedCount %d\n", round, visitedCount);
         result += visitedCount;
     }
     
     return result / numIterations;
 }
 
-void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy) {
+void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double prob, bool greedy, int heuristicMode) {
     /* initialize random seed: */
     srand(time(NULL));
     
@@ -138,7 +136,7 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
         printf("maxval = %d\n", maxval);
     } else {
         // Heuristic
-        int mode = DEGREEDISCOUNT;
+        int mode = heuristicMode;
         if (mode == BASIC) {
             vector<pair<int, int> > rank;
             for (int i = 0; i < nVertices; i++) {
@@ -146,9 +144,6 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
                 rank.push_back(p);
             }
             sort(rank.begin(), rank.end(), cmp);
-            // for (int i = 0; i < nVertices; i++) {
-            //     printf("%d %d\n", rank[i].first, rank[i].second);
-            // }
             vector<int> seeds;
             for (int i = 0; i < nSeeds; i++) {
                 seeds.push_back(rank[i].first);
@@ -228,6 +223,54 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
 
 }
 
+/* Parallel Version With Lock*/
+void singleNodeBFSParallelWithLock(Graph *g, int v_id, bool visited[], omp_lock_t *locks, int nVertices) {
+    Vertex *v = g->vertices[v_id];
+    // Create a queue for BFS
+    queue<int> q;
+    
+    omp_set_lock(&locks[v->id]);
+    if (visited[v->id]) {
+        omp_unset_lock(&locks[v->id]);
+        return;
+    }
+    
+    visited[v->id] = true;
+    omp_unset_lock(&locks[v->id]);
+
+    q.push(v->id);
+
+    unsigned int seed = (unsigned int) time(NULL);
+ 
+    while(!q.empty())
+    {
+        int size = q.size();
+ 
+        for (int i = 0; i < size; i++) {
+            int cur = q.front();
+            for (int j = 0; j < int(g->vertices[cur]->neighbors.size()); j++) {
+                bool isVisit = (rand_r(&seed) / (float) RAND_MAX) <= g->prob;
+                if (!isVisit) {
+                    continue;
+                }
+
+                int visit_id = g->vertices[cur]->neighbors[j];
+
+                omp_set_lock(&locks[visit_id]);
+                if (visited[visit_id]) {
+                    omp_unset_lock(&locks[visit_id]);
+                    continue;
+                }
+                visited[visit_id] = true;
+                omp_unset_lock(&locks[visit_id]);
+
+                q.push(visit_id);
+            }
+            q.pop();
+        }
+    }
+}
+
 /* Parallel Version */
 void singleNodeBFSParallel(Graph *g, int v_id, bool visited[], int nVertices) {
     Vertex *v = g->vertices[v_id];
@@ -265,7 +308,39 @@ void singleNodeBFSParallel(Graph *g, int v_id, bool visited[], int nVertices) {
             q.pop();
         }
     }
+}
+
+
+int monteCarloSimulationParallelWithLock(Graph *g, vector<int> vertices, int numIterations, int nThreads) {
+    long result = 0;
+    int nVertices = int(g->vertices.size());
     
+    for (int round = 0; round < numIterations; round++) {
+        bool visited[nVertices];
+        // locks for each vertex
+        omp_lock_t *locks = (omp_lock_t *)calloc(nVertices, sizeof(omp_lock_t));
+        
+        for (int i = 0; i < nVertices; i++) {
+            visited[i] = false;
+            omp_init_lock(&locks[i]);
+        }
+
+        #pragma omp parallel for
+        for (int v_index = 0; v_index < int(vertices.size()); v_index++) {
+            // Search reachable neighbors
+            singleNodeBFSParallelWithLock(g, vertices[v_index], visited, locks, nVertices);
+        }
+
+        int visitedCount = 0;
+        for (int v_index = 0; v_index < nVertices; v_index++) {
+            if (visited[v_index]) {
+                visitedCount++;
+            }
+        }
+        result += visitedCount;
+    }
+    
+    return result / numIterations;
 }
 
 int monteCarloSimulationParallel(Graph *g, vector<int> vertices, int numIterations, int nThreads) {
@@ -288,7 +363,6 @@ int monteCarloSimulationParallel(Graph *g, vector<int> vertices, int numIteratio
                 visitedCount++;
             }
         }
-        // printf("thread %d, round %d, visitedCount %d\n", omp_get_thread_num(), round, visitedCount);
         result += visitedCount;
     }
     
@@ -296,7 +370,7 @@ int monteCarloSimulationParallel(Graph *g, vector<int> vertices, int numIteratio
 }
 
 void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations, 
-                double prob, bool greedy, int nThreads) {
+                double prob, bool greedy, int nThreads, int heuristicMode, int withLock) {
     /* Set the number of threads for the parallel region */
     omp_set_num_threads(nThreads);
     
@@ -380,7 +454,7 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
         delete []allPermutations;
     } else {
         // Heuristic
-        int mode = DEGREEDISCOUNT;
+        int mode = heuristicMode;
         if (mode == BASIC) {
             vector<pair<int, int> > rank;
             for (int i = 0; i < nVertices; i++) {
@@ -388,9 +462,6 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
                 rank.push_back(p);
             }
             sort(rank.begin(), rank.end(), cmp);
-            // for (int i = 0; i < nVertices; i++) {
-            //     printf("%d %d\n", rank[i].first, rank[i].second);
-            // }
             vector<int> seeds;
             for (int i = 0; i < nSeeds; i++) {
                 seeds.push_back(rank[i].first);
@@ -423,6 +494,7 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
             printf("Minus-1 heuristic result = %d\n", result);
         } else if (mode == DEGREEDISCOUNT) {
             unordered_map<int, int> id2degree;
+            #pragma omp parallel for
             for (int i = 0; i < nVertices; i++) {
                 id2degree[g->vertices[i]->id] = int(g->vertices[i]->neighbors.size());
             }
@@ -461,7 +533,13 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
 
             vector<int> seeds;
             seeds.insert(seeds.end(), seedsSet.begin(), seedsSet.end());
-            int result = monteCarloSimulationParallel(g, seeds, nMonteCarloSimulations, nThreads);
+
+            int result = 0;
+            if (withLock) {
+                result = monteCarloSimulationParallelWithLock(g, seeds, nMonteCarloSimulations, nThreads);
+            } else {
+                result = monteCarloSimulationParallel(g, seeds, nMonteCarloSimulations, nThreads);
+            }
             printf("Degree Discount heuristic result = %d\n", result);
         }
     }
