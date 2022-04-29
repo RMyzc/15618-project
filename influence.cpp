@@ -15,28 +15,8 @@
 
 using namespace std;
 
-static bool cmp(const pair<int, int>& p1, const pair<int, int>& p2) {
-    return p1.second > p2.second;
-}
-
-void readInput(char *inputFilename, int *nVertices, int *nEdges, graph_t **g) {
-    ifstream infile(inputFilename);
-    // Read the first line of the input data and put them into the graph
-    infile >> *nVertices >> *nEdges;
-    for (int i = 0; i < *nVertices; i++) {
-        vertex_t *v = new vertex(i);
-        (*g)->vertices.push_back(v);
-    }
-    // Read the neighbors from the input data
-    int from, to;
-    while (infile >> from >> to) {
-        (*g)->vertices[from]->neighbors.push_back(to);
-        (*g)->vertices[to]->neighbors.push_back(from);
-    }
-}
-
-void singleNodeBFS(graph_t *g, int v_id, bool visited[], int nVertices) {
-    vertex_t *v = g->vertices[v_id];
+void singleNodeBFS(Graph *g, int v_id, bool visited[], int nVertices) {
+    Vertex *v = g->vertices[v_id];
     if (visited[v->id]) {
         return;
     }
@@ -74,7 +54,7 @@ void singleNodeBFS(graph_t *g, int v_id, bool visited[], int nVertices) {
     
 }
 
-int monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
+int monteCarloSimulation(Graph *g, vector<int> vertices, int numIterations) {
     long result = 0;
     int nVertices = int(g->vertices.size());
     
@@ -101,7 +81,7 @@ int monteCarloSimulation(graph_t *g, vector<int> vertices, int numIterations) {
 }
 
 
-int monteCarloSimulationPt(graph_t *g, int* vertices, int verticesSize, int numIterations) {
+int monteCarloSimulationPt(Graph *g, int* vertices, int verticesSize, int numIterations) {
     long result = 0;
     int nVertices = int(g->vertices.size());
     
@@ -133,7 +113,7 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
     
     // Read input file to get the number of vertices, number of edges and all the information of the graph
     int nVertices = 0, nEdges = 0;
-    graph_t *g = new graph_t(prob);
+    Graph *g = new Graph(prob);
     readInput(inputFilename, &nVertices, &nEdges, &g);
 
     if (greedy) {
@@ -249,8 +229,8 @@ void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, double
 }
 
 /* Parallel Version */
-void singleNodeBFSParallel(graph_t *g, int v_id, bool visited[], int nVertices) {
-    vertex_t *v = g->vertices[v_id];
+void singleNodeBFSParallel(Graph *g, int v_id, bool visited[], int nVertices) {
+    Vertex *v = g->vertices[v_id];
     if (visited[v->id]) {
         return;
     }
@@ -288,7 +268,7 @@ void singleNodeBFSParallel(graph_t *g, int v_id, bool visited[], int nVertices) 
     
 }
 
-int monteCarloSimulationParallel(graph_t *g, vector<int> vertices, int numIterations, int nThreads) {
+int monteCarloSimulationParallel(Graph *g, vector<int> vertices, int numIterations, int nThreads) {
     long result = 0;
     int nVertices = int(g->vertices.size());
     
@@ -325,7 +305,7 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
     
     // Read input file to get the number of vertices, number of edges and all the information of the graph
     int nVertices = 0, nEdges = 0;
-    graph_t *g = new graph_t(prob);
+    Graph *g = new Graph(prob);
     readInput(inputFilename, &nVertices, &nEdges, &g);
 
     if (greedy) {
