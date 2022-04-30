@@ -1,3 +1,10 @@
+/**
+ * CMU 15-618 Parallel Computer Architecture and Programming
+ * Parallel Influence Maximization in Social Networks
+ * 
+ * Author: Zican Yang(zicany), Yuling Wu(yulingw)
+ */
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -8,8 +15,10 @@
 
 using namespace std;
 
+// Divide the total malloc memory by this number to reduce malloc overhead
 const int GREEDY_DIVIDE = 64;
 
+// Four kinds of heuristic algorithms
 enum heuristicModeEnum {
     BASIC,
     MINUSONE,

@@ -1,9 +1,24 @@
+/**
+ * CMU 15-618 Parallel Computer Architecture and Programming
+ * Parallel Influence Maximization in Social Networks
+ * 
+ * Author: Zican Yang(zicany), Yuling Wu(yulingw)
+ */
+
 import java.util.*;
 
+/**
+ * Social Network Graph Generation Tool
+ *
+ * Use this tool to generate any kind of testset you want
+ */
 public class BuildData {
+    // Number of vertices
     static int vecNum = 20;
+    // Number of total edges
     static int edgeNum = 200;
 
+    // Edge start offset
     static int base = 0;
 
     private static class Edge {
@@ -22,12 +37,15 @@ public class BuildData {
 
         HashMap<Integer, HashSet<Integer>> record = new HashMap<>();
 
+        // Edge should be listed in ascending order
         PriorityQueue<Edge> result = new PriorityQueue<>(Comparator.comparingInt((Edge o) -> o.srcVec));
 
         int currEdgeNum = 0;
+        // Edge should fit in range
         if (edgeNum > (vecNum * (vecNum - 1))/2) {
             edgeNum = (vecNum * (vecNum - 1))/2;
         }
+
         while (currEdgeNum < edgeNum) {
             int srcVec = rand.nextInt(vecNum);
             int destVec = rand.nextInt(vecNum);

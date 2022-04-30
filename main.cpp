@@ -1,3 +1,10 @@
+/**
+ * CMU 15-618 Parallel Computer Architecture and Programming
+ * Parallel Influence Maximization in Social Networks
+ * 
+ * Author: Zican Yang(zicany), Yuling Wu(yulingw)
+ */
+
 #include "influence.h"
 #include <cstdio>
 #include <cstdlib>
@@ -34,17 +41,27 @@ void printHelp(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) {
+    // Record duration time
     double totalRuntime;
+    // Number of target seeds
     int nSeeds = 10;
+    // Iteration number of monte carlo simulation
     int nMonteCarloSimulations = 100;
+    // Propagation probability
     double prob = 0.1;
+    // Is using greedy algorithm
+    bool greedy = true;
+    // Is parallel mode
+    int mode = true;
+    // Number of parallel threads
+    int nthreads = 1;
+    // Mode in heuristic algorithm
+    int heuristicMode = DEGREEDISCOUNT;
+    // Is using lock implemantation in heuristic approach
+    bool withLock = false;
+
     char *inputFilename = NULL;
     int opt = 0;
-    bool greedy = true;
-    int mode = true;
-    int nthreads = 1;
-    int heuristicMode = DEGREEDISCOUNT;
-    bool withLock = false;
 
     // Read command line arguments
     do {
@@ -104,7 +121,7 @@ int main(int argc, char *argv[]) {
     }
 
     auto startTime = Clock::now();
-    // Run computation
+    // Run computation based on input mode, serial or parallel
     if (!mode) {
         compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy, heuristicMode);
     } else {
@@ -114,7 +131,5 @@ int main(int argc, char *argv[]) {
     totalRuntime = chrono::duration_cast<dsec>(Clock::now() - startTime).count();
     printf("Total Compute Time: %lf.\n", totalRuntime);
 
-    // Cleanup
-    // printf("Elapsed time for proc %d: %f\n", procID, endTime - startTime);
     return 0;
 }
