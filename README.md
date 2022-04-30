@@ -8,9 +8,9 @@ Yuling Wu (yulingw), Zican Yang (zicany)
 We are going to implement a parallel version of influence maximization algorithm in social networks using OpenMP.
 
 ## BACKGROUND  
-Social networks have become an important part of people's lives due to the rise of mobile devices and the continuous development of network technology. The user relationships on many platforms can be represented by social networks. How to better analyze social networks and use their characteristics has become the focus of research. For example, in the fields of public opinion monitoring and viral marketing, the goal is to find a fixed number of seed user nodes to maximize the spread of influence. Such goals can be abstracted as Influence Maximization.
+Social networks have become an important part of people's lives due to the rise of mobile devices and the continuous development of network technology. The user relationships on many platforms can be represented by social networks. How to better analyze social networks and use their characteristics has become the focus of research. For example, in the fields of public opinion monitoring and viral marketing, the goal is to **find a fixed number of seed user nodes and estimate how many users can be affected by these seed users**. Such goals can be abstracted as Influence Maximization.
 
-There are three common models in influence spread, and we choose independent cascade(IC) model. Suppose we have a directed Graph *G=(V,E,W)* to represent a social network, where each vertex in *V* is a social network user, each edge in *E* is an influence spread route from a user to another, and each value in *W* is the weight of an edge which represents the probability of influence spread. The influence maximization problem can be depicted as, given the number *N* of seed nodes, select *N* seed nodes from *V* which will result in maximum number of activated nodes.
+There are three common models in influence spread, and we choose independent cascade(IC) model. Suppose we have a directed Graph *G=(V,E,W)* to represent a social network, where each vertex in *V* is a social network user, each edge in *E* is an influence spread route from a user to another, and each value in *W* is the weight of an edge which represents the probability of influence spread. The influence maximization problem can be depicted as, given the number *N* of seed nodes, select *N* seed nodes from *V* which will result in maximum number of activated nodes and estimate the maximum number of activated nodes.
 
 Because we mainly focus on the parallelizing of the problem, we will make every assumption simpler. We suppose that our graph is a undirected graph, and each value in *W* is identical (we will make influence spread possibility as a command line argument). We also suppose that each vertex can only perform influence spread once, which means if a vertex is visited, it cannot be revisited.
 
@@ -18,7 +18,7 @@ This problem is proved NP-hard<sup>[[3]](#Reference)</sup>, and there are two ki
 
 The basic greedy algorithm is, we compute the spread result on each possible assignment of *N* seed nodes on *V*, and select the set of nodes with the maximum spread result. This can be parallized in two levels: the first is we can assign the possible assignment of seed nodes to *P* processors, and combine the result from each precessor's local maximum value; the second is we can parallize the computation of influence spread given a fixed set of seed nodes by computing each node's spread and combine them together.
 
-The basic heuristic algorithm is, we compute the out-degree of each vertice and sort in descending order. Then we select the nodes with top-N out-degree as seed nodes set. To make the result more precise, we may need minus-1 degree or degree-discount algorithm<sup>[[4]](#Reference)</sup> to modify the out-degrees to avoid selecting nodes too close to each other. This can be parallized in two levels: the first is computing the out-degree of each vertice in parallel; the second is selecting top-N nodes from observing sorted out-degrees.
+The basic heuristic algorithm is, we compute the out-degree of each vertice and sort in descending order. Then we select the nodes with top-N out-degree as seed nodes set and compute the spread result of these seed nodes. To make the result more precise, we may need minus-1 degree or degree-discount algorithm<sup>[[4]](#Reference)</sup> to modify the out-degrees to avoid selecting nodes too close to each other. This can be parallized in two levels: the first is computing the out-degree of each vertice in parallel; the second is selecting top-N nodes from observing sorted out-degrees.
 
 ## THE CHALLENGE  
 
@@ -41,7 +41,7 @@ The discussion of influence spread proposed by Pedro Domingos and Matt Richardso
 - Decoupling the dependency will lead to inaccurate final results.  
 
 ## RESOURCES  
-We plan to start from scratch and implement a sequential version of the algorithm first. We have not yet decided to use greedy algorithm or heuristic algorithm, but they can all be parallelized. Because implementing a sequential version of both algorithm will not be too difficult, we may implement sequential of them both.
+We plan to start from scratch and implement a sequential version of the algorithm first. We decided to use both greedy algorithm and heuristic algorithm, since they all can be parallelized. Because implementing a sequential version of both algorithm will not be too difficult, we may implement sequential of them both.
 
 We will reference some research papers in the *Reference* part to implement the sequential version of algorithms.
 

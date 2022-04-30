@@ -14,6 +14,7 @@ enum heuristicModeEnum {
     BASIC,
     MINUSONE,
     DEGREEDISCOUNT,
+    DEGREEDISCOUNTPARALLEL,
 };
 
 void compute(char *inputFilename, int nSeeds, int nMonteCarloSimulations, 

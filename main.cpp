@@ -21,7 +21,8 @@ void printHelp(char *argv[]) {
     printf("\t[-t IS_GREEDY] Use greedy method, default 1\n");
     printf("\t[-m PARALLEL_MODE] Use parallel mode, default 1\n");
     printf("\t[-n # of THREADS] Number of threads, default 1\n");
-    printf("\t[-x HEURISTIC_MODE] Heuristic approach, 0 for BASIC, 1 for MINUS_ONE, 2 for DEGREE_DISCOUNT, default 2\n");
+    printf("\t[-x HEURISTIC_MODE] Heuristic approach, 0 for BASIC, 1 for MINUS_ONE, "
+            "2 for DEGREE_DISCOUNT, 3 for DEGREE_DISCOUNT_PARALLEL, default 2\n");
     printf("\t[-l WITH_LOCK] Lock implemantation in heuristic approach, default 0\n");
     printf("\t[-h]: Print helper\n");
     printf("\n");
@@ -104,7 +105,7 @@ int main(int argc, char *argv[]) {
 
     auto startTime = Clock::now();
     // Run computation
-    if (mode) {
+    if (!mode) {
         compute(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy, heuristicMode);
     } else {
         computeParallel(inputFilename, nSeeds, nMonteCarloSimulations, prob, greedy, nthreads, heuristicMode, withLock);
