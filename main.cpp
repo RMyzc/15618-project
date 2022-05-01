@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
     }
     
     totalRuntime = chrono::duration_cast<dsec>(Clock::now() - startTime).count();
-    printf("Total Compute Time: %lf.\n", totalRuntime);
+    printf("Total Compute Time: %lf\n", totalRuntime);
 
     return 0;
 }

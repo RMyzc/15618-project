@@ -649,7 +649,7 @@ void computeParallel(char *inputFilename, int nSeeds, int nMonteCarloSimulations
             int result = 0;
             // Choose to use which level of parallelism
             if (withLock) {
-                // Parallel in BFS level, 
+                // Parallel in BFS level
                 result = monteCarloSimulationParallelWithLock(g, seeds, nMonteCarloSimulations, nThreads);
             } else {
                 // Parallel in monte carlo simulation rounds level

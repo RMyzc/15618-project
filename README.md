@@ -174,3 +174,55 @@ DegreeDiscount Heuristic:
 | Spread Result | 14     | 15           | 15           | 15           | 15           | 15            | 15            | 15             |
 | Compute Time  | 7.8401 | 8.3752       | 6.4468       | 4.7810       | 3.6950       | 22.2256       | 59.5393       | 308.2245       |
 | Speedup       | 1x     | 0.936x       | 1.216x       | 1.639x       | 2.002x       | 0.357x        | 0.131x        | 0.025x         |
+
+**Monte Carlo Simulation (facebook_combined.txt, rounds = 10000, number of seed nodes = 1000, propagation probability = 0.01 and other default settings)**   
+
+|               | Serial   | Parallel rounds of simulation | Parallel seeds in a round |
+|---------------|----------|-------------------------------|---------------------------|
+| threads = 1   | 5.030281 |                      5.207554 |                  5.443124 |
+| threads = 2   | 5.030281 |                      2.922075 |                   3.88047 |
+| threads = 4   | 5.030281 |                      1.483327 |                  2.264276 |
+| threads = 8   | 5.030281 |                      0.870295 |                  1.597984 |
+| threads = 16  | 5.030281 |                      0.809729 |                  2.278705 |
+| threads = 32  | 5.030281 |                      0.758207 |                  3.022054 |
+| threads = 128 | 5.030281 |                      2.142885 |                  6.130179 |  
+
+**Parallel Greedy (easy.txt, number of seeds = 5, propagation probability = 0.01, number of Monte Carlo simulations = 10 and other default settings)**  
+
+|               | Serial | Parallel Monte Carlo simulation | Parallel permutations |
+|---------------|--------|---------------------------------|-----------------------|
+| threads = 1   | 7.8401 |                          8.3752 |              8.305558 |
+| threads = 2   | 7.8401 |                          6.4468 |               6.63494 |
+| threads = 4   | 7.8401 |                           4.781 |              4.359667 |
+| threads = 8   | 7.8401 |                           3.695 |              2.636544 |
+| threads = 16  | 7.8401 |                         22.2256 |              2.105945 |
+| threads = 32  | 7.8401 |                         59.5393 |               1.75202 |
+| threads = 128 | 7.8401 |                        308.2245 |             11.807044 |   
+
+**Parallel Degree-Discount Heuristic (facebook_combined.txt, number of seed nodes = 1000, propagation probability = 0.01 and other default settings)**  
+
+Runtime:  
+
+|               | Serial   | Parallel |
+|---------------|----------|----------|
+| threads = 1   | 0.091134 |  0.49085 |
+| threads = 2   | 0.091134 | 0.263842 |
+| threads = 4   | 0.091134 | 0.144511 |
+| threads = 8   | 0.091134 |  0.11753 |
+| threads = 16  | 0.091134 | 0.053523 |
+| threads = 32  | 0.091134 | 0.037286 |
+| threads = 64  | 0.091134 | 0.028575 |
+| threads = 128 | 0.091134 | 0.030761 |  
+
+Spread Result:  
+
+|               | Serial | Parallel |
+|---------------|--------|----------|
+| threads = 1   |   1247 |     1230 |
+| threads = 2   |   1247 |     1223 |
+| threads = 4   |   1247 |     1208 |
+| threads = 8   |   1247 |     1156 |
+| threads = 16  |   1247 |     1107 |
+| threads = 32  |   1247 |     1067 |
+| threads = 64  |   1247 |     1032 |
+| threads = 128 |   1247 |     1020 |  
