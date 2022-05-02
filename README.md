@@ -4,7 +4,11 @@
 
 Yuling Wu (yulingw), Zican Yang (zicany)
 
-## Final Presentation  
+## Final Report and Presentation  
+Report:  
+Please refer to this [pdf file](https://github.com/RMyzc/15618-project/blob/main/15-618%20Project%20Final%20Report.pdf).
+
+Presentation:  
 Please refer to this [video link](https://www.youtube.com/watch?v=DsL0Himy0Gw).  
 
 ## SUMMARY  
