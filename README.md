@@ -4,6 +4,9 @@
 
 Yuling Wu (yulingw), Zican Yang (zicany)
 
+## Final Presentation  
+Please refer to this [video link](https://www.youtube.com/watch?v=DsL0Himy0Gw).  
+
 ## SUMMARY  
 We are going to implement a parallel version of influence maximization algorithm in social networks using OpenMP.
 
@@ -48,7 +51,7 @@ We will reference some research papers in the *Reference* part to implement the 
 We will use the ghc machines to develop and PSC machines to test the performance. The PSC machines have more cores and can let us test the performance with higher parallization.
 
 ## GOALS AND DELIVERABLES  
-#### PLAN TO ACHIEVE (100%)
+#### PLAN TO ACHIEVE (100%, Finished)
 1. Use OpenMP to parallelize the sequential influence spread algorithm, and expect a speedup of close to P-1 when *P* is not so high.  
 2. Test the parallel algorithm on different datasets to ensure the performance speedup can scale.  
 3. Verify a drop in speedup when *P* is very high due to extra work.
@@ -56,14 +59,14 @@ We will use the ghc machines to develop and PSC machines to test the performance
 5. Test and analyse the performance on both the serialize algorithm and the parallel algorithm from different input args (number of seeds, spread probability, etc.).  
 6. Build a user-defined tool to generate arbitrary kind of dataset which can be used to test the two kind of algorithms.
 
-#### HOPE TO ACHIEVE  (125%)  
+#### HOPE TO ACHIEVE  (125%, Finished)  
 1. Our speedup will be close to P when *P* is not so high.
 2. The spread of influence will be very close to the serial algorithm.
 3. Produce a multi-dimensional scaling report that analyze the features from serial and parallel algorithm on different influence maximization algorithms(greedy, basic heuristic, minus one heuristic, degree discount heuristic).
 
-#### IN CASE THE WORK GOES MORE SLOWLY (75%)
+#### IN CASE THE WORK GOES MORE SLOWLY (75%, Finished)
 1. If the algorithm will not work so well, we hope in the best situation it will give us a 2x speedup.  
-2. ~~Finish serialization and parallel versions in only one of the algorithms (Greedy or Heuristic).~~ (Already finished before milestone)
+2. Finish serialization and parallel versions in only one of the algorithms (Greedy or Heuristic). (Already finished before milestone)
 
 #### DEMO PLAN
 We plan to give visualization of our influence spread result, graph of speedup and result analysis in our final poster session)
